@@ -5,9 +5,13 @@
 #include <sys/stat.h>
 #include <linux/limits.h>
 
-// Phase 1 - Commit 1: Basic setup and hashing
 int object_write(const void *buf, size_t len, char *hash_out) {
-    // Generate the SHA-256 hash for the content
     sha256_hex(buf, len, hash_out);
+    
+    // Phase 1 - Commit 2: Create directory path
+    char dir_path[PATH_MAX];
+    snprintf(dir_path, sizeof(dir_path), ".pes/objects/%.2s", hash_out);
+    mkdir(dir_path, 0755); // Create folder with read/write/execute permissions
+    
     return 0; 
 }
