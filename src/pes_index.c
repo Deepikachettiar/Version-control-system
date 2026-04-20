@@ -20,13 +20,13 @@ int index_add(const char *filename) {
     }
     free(buf);
     
-    // Phase 2 - Commit 3: Open the .pes/index file to record the entry
-    FILE *index_file = fopen(".pes/index", "a"); // "a" stands for append mode
-    if (!index_file) {
-        printf("Error: Could not open index file.\n");
-        return -1;
-    }
+    FILE *index_file = fopen(".pes/index", "a"); 
+    if (!index_file) return -1;
     
-    fclose(index_file); // We will write to it in the next commit
+    // Phase 2 - Commit 4: Write the hash and filename to the index
+    fprintf(index_file, "%s %s\n", hash, filename);
+    fclose(index_file);
+    
+    printf("Added %s to index.\n", filename);
     return 0;
 }
