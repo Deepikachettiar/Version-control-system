@@ -8,10 +8,22 @@
 int object_write(const void *buf, size_t len, char *hash_out) {
     sha256_hex(buf, len, hash_out);
     
-    // Phase 1 - Commit 2: Create directory path
     char dir_path[PATH_MAX];
     snprintf(dir_path, sizeof(dir_path), ".pes/objects/%.2s", hash_out);
-    mkdir(dir_path, 0755); // Create folder with read/write/execute permissions
+    mkdir(dir_path, 0755);
     
-    return 0; 
+    // Phase 1 - Commit 3: Write data atomically using a temp file
+    char file_path[PATH_MAX];
+    snprintf(file_path, sizeof(file_path), "%s/%s", dir_path, hash_out + 2);
+    
+    char temp_path[PATH_MAX];
+    snprintf(temp_path, sizeof(temp_path), "%s.tmp", file_path);
+    
+    FILE *f = fopen(temp_path, "wb");
+    if (!f) return -1;
+    fwrite(buf, 1, len, f);
+    fclose(f);
+    
+    // Rename temp file to final hash name
+    return rename(temp_path, file_path);
 }
