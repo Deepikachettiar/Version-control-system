@@ -27,3 +27,16 @@ int object_write(const void *buf, size_t len, char *hash_out) {
     // Rename temp file to final hash name
     return rename(temp_path, file_path);
 }
+
+// Phase 1 - Commit 4: Setup object read function
+void *object_read(const char *hash, size_t *size_out) {
+    char file_path[PATH_MAX];
+    // Reconstruct the file path from the hash
+    snprintf(file_path, sizeof(file_path), ".pes/objects/%.2s/%s", hash, hash + 2);
+    
+    FILE *f = fopen(file_path, "rb");
+    if (!f) return NULL; // File not found
+    
+    fclose(f);
+    return NULL; 
+}
