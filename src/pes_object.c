@@ -28,15 +28,23 @@ int object_write(const void *buf, size_t len, char *hash_out) {
     return rename(temp_path, file_path);
 }
 
-// Phase 1 - Commit 4: Setup object read function
 void *object_read(const char *hash, size_t *size_out) {
     char file_path[PATH_MAX];
-    // Reconstruct the file path from the hash
     snprintf(file_path, sizeof(file_path), ".pes/objects/%.2s/%s", hash, hash + 2);
     
     FILE *f = fopen(file_path, "rb");
-    if (!f) return NULL; // File not found
+    if (!f) return NULL;
     
+    // Phase 1 - Commit 5: Read the file data into memory
+    fseek(f, 0, SEEK_END);
+    *size_out = ftell(f); // Get file size
+    fseek(f, 0, SEEK_SET);
+    
+    void *buf = malloc(*size_out); // Allocate memory
+    if (buf) {
+        fread(buf, 1, *size_out, f); // Read data
+    }
     fclose(f);
-    return NULL; 
+    
+    return buf;
 }
